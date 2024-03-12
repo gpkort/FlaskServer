@@ -99,33 +99,6 @@ def get_points(outpoints: np.ndarray,
     return points
 
 
-class PoseCamera:
-    def __init__(self, camera_port: int = 0):
-        self._cap = cv.VideoCapture(camera_port)
-        self._has_camera = self._cap.isOpened()
-        self._height = 0
-        self._width = 0
-
-        if self._has_camera:
-            has_frame, frame = self._cap.read()
-            if has_frame:
-                self._height = frame.shape[0]
-                self._width = frame.shape[1]
-
-    @property
-    def status(self) -> bool:
-        return self._has_camera
-
-    @property
-    def dimension(self) -> tuple:
-        return self._height, self._width
-
-    def click(self) -> tuple:
-        return self._cap.read()
-
-    def release(self):
-        self._cap.release()
-
 
 class PoseDetection:
     def __init__(self, model_path: str) -> None:

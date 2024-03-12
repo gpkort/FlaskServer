@@ -2,12 +2,18 @@ from flask import Flask
 from flask_cors import CORS
 from pose import ImageData, Pose, Segment, Point
 import cv2 as cv
-from poser import PoseCamera, PoseDetection, get_pose
+import numpy as np
+from Pose.PoseModel import ModelData, NetworkModel, PoseCamera
+from Pose.Poser import PoseCalculator
+import models.coco.pairs as coco
 
 app = Flask(__name__)
 CORS(app)
 camera = PoseCamera(0)
-pose_det = PoseDetection("models/graph_opt.pb")
+
+pose_det = NetworkModel(coco.PROTO_PATH, coco.CAFFE_PATH)
+pose_det.init_network()
+pose_calculator = PoseCalculator(coco.COCO_MODEL)
 
 
 # Route for seeing a data
@@ -17,7 +23,7 @@ def req_pose():
     pose = Pose(1)
 
     if ok:
-        outpoints = pose_det.get_blob_points(img)
+        outpoints = pose_det.get_output(img)
         pose = get_pose(outpoints, img.shape[0], img.shape[1])
 
     response = app.response_class(
